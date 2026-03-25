@@ -8,7 +8,9 @@ constexpr unsigned long TIME_FORWARD = 1200;
 constexpr unsigned long TIME_RIGHT_SHORT = 160;
 constexpr unsigned long TIME_BACK_LONG = 1400;
 
-constexpr unsigned int TASK_GET_CLICK_COUNT = 20;
+constexpr unsigned int BBOX_BUY_CLICK_COUNT = 3;
+constexpr unsigned long TIME_CLICK_PRESS = 100;
+constexpr unsigned long TIME_CLICK_INTERVAL = 100;
 
 RoombaController::RoombaController()
   : enabled(false),
@@ -63,14 +65,14 @@ void RoombaController::update() {
       }
       break;
 
-    // タスク回収（クリック）
+    // BlackBoxアイテム購入（クリック）
     case STATE_CLICK:
       if (!mouseIsPressed) {
         Mouse.press(MOUSE_LEFT);
         mouseIsPressed = true;
         mousePressStart = now;
       }
-      if (mouseIsPressed && (now - mousePressStart >= 120)) {
+      if (mouseIsPressed && (now - mousePressStart >= TIME_CLICK_PRESS)) {
         Mouse.release(MOUSE_LEFT);
         mouseIsPressed = false;
         sequenceTimer = now;
@@ -79,10 +81,10 @@ void RoombaController::update() {
       break;
 
     case STATE_CLICK_WAIT:
-      if (now - sequenceTimer >= 120) {
+      if (now - sequenceTimer >= TIME_CLICK_INTERVAL) {
         clickCount++;
 
-        if (clickCount < TASK_GET_CLICK_COUNT) {
+        if (clickCount < BBOX_BUY_CLICK_COUNT) {
           state = STATE_CLICK;
         } else {
           state = STATE_SPAWN_ADJUST;
